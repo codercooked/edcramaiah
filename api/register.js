@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
     console.log(`[VERCEL REGISTRATION] Logged #${data.serial}: ${data.name} (${data.email}) - ${data.college}`);
 
     // If Vercel Postgres / Neon database is connected
-    const dbUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL;
+    const dbUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_PRISMA_URL;
     if (dbUrl) {
       try {
         const sql = neon(dbUrl);

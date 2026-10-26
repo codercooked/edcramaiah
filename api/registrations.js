@@ -2,7 +2,7 @@ const { neon } = require('@neondatabase/serverless');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  const dbUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL;
+  const dbUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_PRISMA_URL;
 
   if (!dbUrl) {
     return res.status(200).json({
