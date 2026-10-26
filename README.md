@@ -19,9 +19,9 @@ An interactive, gamified 16-bit retro arcade orientation experience built for **
 
 ## Quick Start
 
-### Option A: Node.js
+### Option A: Node.js (Local with CSV Logging)
 ```bash
-npm start
+npm run server
 ```
 Runs `server.js` on `http://localhost:3000`.
 
@@ -31,6 +31,9 @@ python3 server.py
 # or: npm run server:py
 ```
 Runs `server.py` on `http://localhost:3000`.
+
+### Option C: Vercel (Production Cloud)
+Push to GitHub and connect to Vercel. `vercel.json` and `api/register.js` automatically serve the static site and serverless API out of the box with zero configuration.
 
 ---
 
