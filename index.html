@@ -896,11 +896,6 @@ body::before {
   color: var(--blue-navy);
 }
 
-/* Responsive Pixel Scene Window (Overworld Viewport) */
-.pixel-scene-window {
-  display: none;
-}
-
 @media (max-width: 768px) {
   /* On mobile portrait screens, frame explorer character cleanly at bottom zoomed out */
   .pixel-bg-layer {
@@ -942,63 +937,6 @@ body::before {
     font-size: clamp(1.35rem, 5.5vw, 1.85rem);
     line-height: 1.25;
     margin-bottom: 0.85rem;
-  }
-
-  /* Retro pixel overworld screen banner showcasing complete 16:9 art on mobile */
-  .pixel-scene-window {
-    display: block;
-    margin: 0 auto 1.15rem;
-    max-width: 330px;
-    text-decoration: none;
-  }
-  .pixel-scene-frame {
-    position: relative;
-    border: 3px solid var(--blue-navy);
-    box-shadow: 4px 4px 0 var(--blue-navy);
-    background: #8CB8DE;
-    overflow: hidden;
-    border-radius: 2px;
-    line-height: 0;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-  }
-  .pixel-scene-frame:active {
-    transform: translateY(2px);
-    box-shadow: 2px 2px 0 var(--blue-navy);
-  }
-  .pixel-scene-img {
-    width: 100%;
-    height: auto;
-    display: block;
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
-  }
-  .pixel-scene-badge {
-    position: absolute;
-    z-index: 2;
-    font-family: var(--font-pixel);
-    line-height: 1.2;
-    border: 2px solid #FFF;
-    pointer-events: none;
-  }
-  .pixel-scene-badge--top {
-    top: 7px;
-    left: 7px;
-    background: rgba(15, 39, 68, 0.9);
-    color: var(--blue-sky);
-    font-size: 0.44rem;
-    padding: 0.3rem 0.55rem;
-    box-shadow: 2px 2px 0 var(--blue-navy);
-  }
-  .pixel-scene-badge--bot {
-    bottom: 7px;
-    right: 7px;
-    background: rgba(15, 39, 68, 0.9);
-    color: #FDE047;
-    font-size: 0.42rem;
-    padding: 0.3rem 0.55rem;
-    border-color: #FDE047;
-    box-shadow: 2px 2px 0 var(--blue-navy);
-    animation: pixelPulse 2s infinite ease-in-out;
   }
 
   .pixel-hero-desc {
@@ -1072,15 +1010,6 @@ body::before {
       DISCOVER<br>
       <span class="text-sky">THE UNDISCOVERED</span>
     </h1>
-
-    <!-- MOBILE PIXEL SCENE WINDOW: Crisp uncropped 16-bit overworld viewport -->
-    <a href="#registerSection" class="pixel-scene-window" id="sceneWindowLink" aria-label="Jump to registration quest">
-      <div class="pixel-scene-frame">
-        <div class="pixel-scene-badge pixel-scene-badge--top">STAGE 1-1 • THE UNCHARTED</div>
-        <img src="pixel_bg.png" alt="Pixel Venture World with Explorer and Floating Isles" class="pixel-scene-img">
-        <div class="pixel-scene-badge pixel-scene-badge--bot">PRESS START &darr;</div>
-      </div>
-    </a>
 
     <div class="hero-badges-grid">
       <div class="hero-pill hero-pill--venture" id="ventureBadge" role="button" tabindex="0">
@@ -1580,14 +1509,6 @@ body::before {
       completeQuest('venture', e.clientX, e.clientY);
       const reg = document.getElementById('registerSection');
       if (reg) reg.scrollIntoView({ behavior: 'smooth' });
-    });
-  }
-
-  // Mobile Scene Window click
-  const sceneWindowLink = document.getElementById('sceneWindowLink');
-  if (sceneWindowLink) {
-    sceneWindowLink.addEventListener('click', () => {
-      playSound('coin');
     });
   }
 
