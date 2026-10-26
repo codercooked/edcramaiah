@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
     const rows = await sql`SELECT * FROM registrations ORDER BY id DESC;`;
 
     // Download as CSV if requested
-    if (req.url && req.url.includes('.csv')) {
+    if (req.url && (req.url.includes('.csv') || req.url.includes('format=csv'))) {
       res.setHeader('Content-Type', 'text/csv; charset=utf-8');
       res.setHeader('Content-Disposition', 'attachment; filename="ecell_registrations_2026.csv"');
       let csv = 'ID,Created At,Serial,Name,Email,Phone,College,Branch,Year,Interests,Vision\n';
