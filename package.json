@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "E-Cell RIT Orientation 2026",
   "scripts": {
-    "server": "node server.js",
+    "server": "node local-server.js",
     "server:py": "python3 server.py"
   },
   "keywords": [],
