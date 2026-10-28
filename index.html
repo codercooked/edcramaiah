@@ -1072,7 +1072,6 @@ body::before {
 
         <div class="pixel-step-node active" id="stepNode0">1</div>
         <div class="pixel-step-node" id="stepNode1">2</div>
-        <div class="pixel-step-node" id="stepNode2">3</div>
       </div>
 
       <form id="rsvpForm" novalidate>
@@ -1123,59 +1122,8 @@ body::before {
               </div>
             </div>
 
-            <!-- STAGE 2: GUILD & REALM -->
+            <!-- STAGE 2: SKILL TREE -->
             <div class="form-stage-page" data-stage="1">
-              <div class="input-block">
-                <label class="input-label" for="inpCollege">
-                  <span>COLLEGE / INSTITUTION</span>
-                  <span>*</span>
-                </label>
-                <input class="pixel-input" type="text" id="inpCollege" name="college" placeholder="e.g. Ramaiah Institute of Technology" required>
-                <div class="field-error-msg" id="errCollege">Enter your college name.</div>
-              </div>
-
-              <!-- PIXEL TRAIL ARROW 3 -->
-              <div class="pixel-trail-arrow" aria-hidden="true">
-                <span class="arrow-char">&darr;</span>
-                <span>DISCIPLINE TREE</span>
-                <span class="arrow-char">&darr;</span>
-              </div>
-
-              <div class="input-block">
-                <label class="input-label" for="inpBranch">
-                  <span>BRANCH / DEPARTMENT</span>
-                  <span>*</span>
-                </label>
-                <input class="pixel-input" type="text" id="inpBranch" name="branch" placeholder="e.g. Computer Science / AI / Mechanical" required>
-                <div class="field-error-msg" id="errBranch">Enter your branch of study.</div>
-              </div>
-
-              <!-- PIXEL TRAIL ARROW 4 -->
-              <div class="pixel-trail-arrow" aria-hidden="true">
-                <span class="arrow-char">&darr;</span>
-                <span>EXPEDITION LEVEL</span>
-                <span class="arrow-char">&darr;</span>
-              </div>
-
-              <div class="input-block">
-                <label class="input-label" for="inpYear">
-                  <span>YEAR OF STUDY</span>
-                  <span>*</span>
-                </label>
-                <select class="pixel-select" id="inpYear" name="year" required>
-                  <option value="" disabled selected>Select your current year</option>
-                  <option value="1st Year">1st Year • Rookie Scout</option>
-                  <option value="2nd Year">2nd Year • Wayfarer</option>
-                  <option value="3rd Year">3rd Year • Pathfinder</option>
-                  <option value="4th Year">4th Year • Master Guild</option>
-                  <option value="Postgraduate">Postgraduate</option>
-                </select>
-                <div class="field-error-msg" id="errYear">Select your academic year.</div>
-              </div>
-            </div>
-
-            <!-- STAGE 3: SKILL TREE -->
-            <div class="form-stage-page" data-stage="2">
               <div class="input-block">
                 <label class="input-label">
                   <span>SELECT YOUR INTERESTS</span>
@@ -1376,7 +1324,7 @@ body::before {
 
   // State
   let currentStage = 0;
-  const totalStages = 3;
+  const totalStages = 2;
   let userXp = 0;
   const quests = {
     map: { id: 'qMap', xp: 25, done: false },
@@ -1629,8 +1577,7 @@ body::before {
   const progressFill = document.getElementById('pixelProgressFill');
   const stepNodes = [
     document.getElementById('stepNode0'),
-    document.getElementById('stepNode1'),
-    document.getElementById('stepNode2')
+    document.getElementById('stepNode1')
   ];
   const btnBack = document.getElementById('btnBack');
   const btnNext = document.getElementById('btnNext');
@@ -1649,7 +1596,7 @@ body::before {
   });
 
   // Clear errors on input
-  ['inpName', 'inpEmail', 'inpPhone', 'inpCollege', 'inpBranch', 'inpYear'].forEach(id => {
+  ['inpName', 'inpEmail', 'inpPhone'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     const err = document.getElementById('err' + id.replace('inp', ''));
@@ -1668,13 +1615,6 @@ body::before {
       const digits = phone.replace(/\D/g, '');
       if (digits.length < 10) { document.getElementById('errPhone').classList.add('visible'); valid = false; }
     } else if (stage === 1) {
-      const college = document.getElementById('inpCollege').value.trim();
-      const branch = document.getElementById('inpBranch').value.trim();
-      const year = document.getElementById('inpYear').value;
-      if (!college) { document.getElementById('errCollege').classList.add('visible'); valid = false; }
-      if (!branch) { document.getElementById('errBranch').classList.add('visible'); valid = false; }
-      if (!year) { document.getElementById('errYear').classList.add('visible'); valid = false; }
-    } else if (stage === 2) {
       const checked = document.querySelectorAll('input[name="interests"]:checked');
       if (checked.length === 0) { document.getElementById('errInterests').classList.add('visible'); valid = false; }
     }
@@ -1737,9 +1677,9 @@ body::before {
       name: document.getElementById('inpName').value.trim(),
       email: document.getElementById('inpEmail').value.trim(),
       phone: document.getElementById('inpPhone').value.trim(),
-      college: document.getElementById('inpCollege').value.trim(),
-      branch: document.getElementById('inpBranch').value.trim(),
-      year: document.getElementById('inpYear').value,
+      college: 'RAMAIAH INSTITUTE OF TECHNOLOGY',
+      branch: '',
+      year: '',
       interests: Array.from(document.querySelectorAll('input[name="interests"]:checked')).map(c => c.value),
       vision: document.getElementById('inpVision').value.trim(),
       timestamp: new Date().toISOString()
