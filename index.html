@@ -381,7 +381,7 @@ body::before {
   position: relative;
   width: 100%;
   max-width: 380px;
-  height: 120px;
+  height: 135px;
   margin: 0 auto;
   border: 3px solid var(--blue-navy);
   box-shadow: 3px 3px 0 var(--blue-navy);
@@ -398,32 +398,53 @@ body::before {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem;
+  padding: 0.6rem;
   text-align: center;
   z-index: 1;
 }
 
 .mystery-item-name {
   font-family: var(--font-pixel);
-  font-size: 0.72rem;
+  font-size: 0.62rem;
   color: var(--blue-primary);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.2rem;
 }
 
-.mystery-item-desc {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--blue-navy);
-  line-height: 1.25;
-}
-
-.mystery-code {
+.mystery-gift-tag {
   font-family: var(--font-pixel);
-  font-size: 0.52rem;
-  background: var(--blue-navy);
-  color: var(--blue-sky);
-  padding: 0.25rem 0.5rem;
-  margin-top: 0.35rem;
+  font-size: 0.76rem;
+  color: var(--blue-navy);
+  background: #FDE047;
+  border: 2px solid var(--blue-navy);
+  box-shadow: 2px 2px 0 var(--blue-navy);
+  padding: 0.25rem 0.65rem;
+  margin: 0.2rem 0 0.45rem;
+  letter-spacing: 0.05em;
+  display: inline-block;
+  animation: pixelPulse 1.8s infinite ease-in-out;
+}
+
+.pixel-btn--whatsapp {
+  background: #25D366;
+  color: #FFF;
+  border: 2px solid var(--blue-navy);
+  box-shadow: 2px 2px 0 var(--blue-navy);
+  font-family: var(--font-pixel);
+  font-size: 0.58rem;
+  padding: 0.45rem 0.85rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  user-select: none;
+  transition: transform 0.1s, box-shadow 0.1s, background-color 0.1s;
+}
+.pixel-btn--whatsapp:hover {
+  background: #1EBE5D;
+}
+.pixel-btn--whatsapp:active {
+  transform: translateY(2px);
+  box-shadow: 0 0 0 var(--blue-navy);
 }
 
 #scratchCanvas {
@@ -1041,12 +1062,14 @@ body::before {
       <div class="mystery-block-wrap" id="scratchContainer">
         <!-- Revealed underlayer -->
         <div class="mystery-revealed">
-          <div class="mystery-item-name">FOUNDER PERK UNLOCKED!</div>
-          <p class="mystery-item-desc">VIP Front-Row Auditorium Seating + Official Welcome Kit</p>
-          <div class="mystery-code">CODE: PIXEL-FOUNDER-26</div>
+          <div class="mystery-item-name">FOUNDER COMMUNITY</div>
+          <div class="mystery-gift-tag">+ SURPRISE GIFT</div>
+          <a href="https://chat.whatsapp.com/Hz22VtBMBBu8WJdMyxKe1X?s=cl&p=a&mlu=4&ilr=4&iam=2" target="_blank" rel="noopener noreferrer" class="pixel-btn pixel-btn--whatsapp" id="mysteryWaBtn">
+            JOIN WHATSAPP GROUP &rarr;
+          </a>
         </div>
 
-        <canvas id="scratchCanvas" width="380" height="120"></canvas>
+        <canvas id="scratchCanvas" width="380" height="135"></canvas>
       </div>
 
       <div class="mystery-hint" id="scratchHint">Rub with finger or cursor to unlock (+50 XP)</div>
@@ -1474,7 +1497,7 @@ body::before {
     function initCanvas() {
       const rect = scratchCanvas.getBoundingClientRect();
       scratchCanvas.width = rect.width || 380;
-      scratchCanvas.height = rect.height || 120;
+      scratchCanvas.height = rect.height || 135;
 
       // Draw Pixel ? Block texture
       sCtx.fillStyle = '#E8D5B5';
@@ -1489,10 +1512,10 @@ body::before {
       sCtx.fillStyle = '#0F2744';
       sCtx.font = '900 32px "Press Start 2P", monospace';
       sCtx.textAlign = 'center';
-      sCtx.fillText('?', scratchCanvas.width / 2, 65);
+      sCtx.fillText('?', scratchCanvas.width / 2, 70);
 
       sCtx.font = '10px "Press Start 2P", monospace';
-      sCtx.fillText('SCRATCH OR RUB TO UNLOCK', scratchCanvas.width / 2, 98);
+      sCtx.fillText('SCRATCH OR RUB TO UNLOCK', scratchCanvas.width / 2, 105);
     }
 
     initCanvas();
@@ -1523,6 +1546,7 @@ body::before {
         const pct = clearCount / (imgData.data.length / 64);
         if (pct > 0.35 && !scratchComplete) {
           scratchComplete = true;
+          scratchCanvas.style.pointerEvents = 'none';
           scratchCanvas.style.transition = 'opacity 0.5s ease';
           scratchCanvas.style.opacity = '0';
           setTimeout(() => { scratchCanvas.style.display = 'none'; }, 550);
@@ -1533,7 +1557,7 @@ body::before {
           completeQuest('block', rect.left + rect.width / 2, rect.top + rect.height / 2);
 
           const hint = document.getElementById('scratchHint');
-          if (hint) hint.innerHTML = '<span style="color:#059669;font-weight:700">ITEM UNLOCKED (+50 XP)</span>';
+          if (hint) hint.innerHTML = '<span style="color:#0284C7;font-weight:700">UNLOCKED! TAP BUTTON ABOVE TO JOIN (+50 XP)</span>';
         }
       } catch(e) {}
     }
@@ -1568,6 +1592,13 @@ body::before {
       const { x, y } = getCoords(e);
       scratch(x, y);
     }, { passive: true });
+  }
+
+  const mysteryWaBtn = document.getElementById('mysteryWaBtn');
+  if (mysteryWaBtn) {
+    mysteryWaBtn.addEventListener('click', () => {
+      playSound('coin');
+    });
   }
 
   // ================================================================
