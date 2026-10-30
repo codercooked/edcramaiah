@@ -15,7 +15,7 @@ if (!fs.existsSync(DATA_DIR)) {
 
 // Initialize CSV header if not exists
 if (!fs.existsSync(CSV_FILE)) {
-  const csvHeader = 'Timestamp,Serial,Name,Email,Phone,College,Branch,Year,Interests,Vision\n';
+  const csvHeader = 'Timestamp,Serial,Name,Email,Phone,USN,College,Branch,Year,Interests,Vision\n';
   fs.writeFileSync(CSV_FILE, csvHeader, 'utf8');
 }
 
@@ -50,6 +50,7 @@ function saveRegistration(entry) {
     escapeCsvField(entry.name || ''),
     escapeCsvField(entry.email || ''),
     escapeCsvField(entry.phone || ''),
+    escapeCsvField(entry.usn || ''),
     escapeCsvField(entry.college || ''),
     escapeCsvField(entry.branch || ''),
     escapeCsvField(entry.year || ''),

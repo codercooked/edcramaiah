@@ -18,10 +18,10 @@ module.exports = async (req, res) => {
     if (req.url && (req.url.includes('.csv') || req.url.includes('format=csv'))) {
       res.setHeader('Content-Type', 'text/csv; charset=utf-8');
       res.setHeader('Content-Disposition', 'attachment; filename="ecell_registrations_2026.csv"');
-      let csv = 'ID,Created At,Serial,Name,Email,Phone,College,Branch,Year,Interests,Vision\n';
+      let csv = 'ID,Created At,Serial,Name,Email,Phone,USN,College,Branch,Year,Interests,Vision\n';
       rows.forEach(r => {
         const cleanVision = (r.vision || '').replace(/"/g, '""');
-        csv += `"${r.id}","${r.created_at}","${r.serial}","${r.name}","${r.email}","${r.phone}","${r.college}","${r.branch}","${r.year}","${r.interests}","${cleanVision}"\n`;
+        csv += `"${r.id}","${r.created_at}","${r.serial}","${r.name}","${r.email}","${r.phone}","${r.usn || ''}","${r.college}","${r.branch}","${r.year}","${r.interests}","${cleanVision}"\n`;
       });
       return res.status(200).send(csv);
     }

@@ -24,7 +24,7 @@ os.makedirs(DATA_DIR, exist_ok=True)
 if not os.path.exists(CSV_FILE):
     with open(CSV_FILE, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(["Timestamp", "Serial", "Name", "Email", "Phone", "College", "Branch", "Year", "Interests", "Vision"])
+        writer.writerow(["Timestamp", "Serial", "Name", "Email", "Phone", "USN", "College", "Branch", "Year", "Interests", "Vision"])
 
 if not os.path.exists(JSON_FILE):
     with open(JSON_FILE, "w", encoding="utf-8") as f:
@@ -55,6 +55,7 @@ def save_registration(entry):
             entry.get("name", ""),
             entry.get("email", ""),
             entry.get("phone", ""),
+            entry.get("usn", ""),
             entry.get("college", ""),
             entry.get("branch", ""),
             entry.get("year", ""),

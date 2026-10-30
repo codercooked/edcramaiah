@@ -1143,6 +1143,22 @@ body::before {
                 <input class="pixel-input" type="tel" id="inpPhone" name="phone" placeholder="+91 98765 43210" required autocomplete="tel">
                 <div class="field-error-msg" id="errPhone">Enter 10-digit mobile number.</div>
               </div>
+
+              <!-- PIXEL TRAIL ARROW 3 -->
+              <div class="pixel-trail-arrow" aria-hidden="true">
+                <span class="arrow-char">&darr;</span>
+                <span>IDENTITY MATRIX</span>
+                <span class="arrow-char">&darr;</span>
+              </div>
+
+              <div class="input-block">
+                <label class="input-label" for="inpUsn">
+                  <span>UNIVERSITY SEAT NUMBER (USN)</span>
+                  <span>*</span>
+                </label>
+                <input class="pixel-input" type="text" id="inpUsn" name="usn" placeholder="e.g. 1MS25IM058" required autocomplete="off" style="text-transform:uppercase">
+                <div class="field-error-msg" id="errUsn">Enter a valid USN (e.g. 1MS25IM058).</div>
+              </div>
             </div>
 
             <!-- STAGE 2: SKILL TREE -->
@@ -1311,6 +1327,10 @@ body::before {
       <div class="ticket-row">
         <span>GUILD:</span>
         <strong id="attendeeDisplayCollege">RAMAIAH INSTITUTE OF TECHNOLOGY</strong>
+      </div>
+      <div class="ticket-row">
+        <span>USN:</span>
+        <strong id="attendeeDisplayUsn">1MS25IM058</strong>
       </div>
       <div class="ticket-row">
         <span>PASS SERIAL:</span>
@@ -1627,7 +1647,7 @@ body::before {
   });
 
   // Clear errors on input
-  ['inpName', 'inpEmail', 'inpPhone'].forEach(id => {
+  ['inpName', 'inpEmail', 'inpPhone', 'inpUsn'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     const err = document.getElementById('err' + id.replace('inp', ''));
@@ -1635,16 +1655,28 @@ body::before {
     el.addEventListener('change', () => { if (err) err.classList.remove('visible'); });
   });
 
+  // Force USN to uppercase on input
+  const usnInput = document.getElementById('inpUsn');
+  if (usnInput) {
+    usnInput.addEventListener('input', () => {
+      usnInput.value = usnInput.value.toUpperCase();
+    });
+  }
+
   function validateStage(stage) {
     let valid = true;
     if (stage === 0) {
       const name = document.getElementById('inpName').value.trim();
       const email = document.getElementById('inpEmail').value.trim();
       const phone = document.getElementById('inpPhone').value.trim();
+      const usn = document.getElementById('inpUsn').value.trim().toUpperCase();
       if (!name) { document.getElementById('errName').classList.add('visible'); valid = false; }
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('errEmail').classList.add('visible'); valid = false; }
       const digits = phone.replace(/\D/g, '');
       if (digits.length < 10) { document.getElementById('errPhone').classList.add('visible'); valid = false; }
+      // USN validation (format e.g. 1MS25IM058: 10 chars, starts with 1MS or general VTU format: \d[A-Z]{2}\d{2}[A-Z]{2}\d{3})
+      const usnPattern = /^[0-9][A-Z]{2}[0-9]{2}[A-Z]{2,3}[0-9]{3}$/;
+      if (!usn || !usnPattern.test(usn)) { document.getElementById('errUsn').classList.add('visible'); valid = false; }
     } else if (stage === 1) {
       const checked = document.querySelectorAll('input[name="interests"]:checked');
       if (checked.length === 0) { document.getElementById('errInterests').classList.add('visible'); valid = false; }
@@ -1708,6 +1740,7 @@ body::before {
       name: document.getElementById('inpName').value.trim(),
       email: document.getElementById('inpEmail').value.trim(),
       phone: document.getElementById('inpPhone').value.trim(),
+      usn: document.getElementById('inpUsn').value.trim().toUpperCase(),
       college: 'RAMAIAH INSTITUTE OF TECHNOLOGY',
       branch: '',
       year: '',
@@ -1748,6 +1781,8 @@ body::before {
 
       document.getElementById('attendeeDisplayName').textContent = (passData.name || 'PLAYER 1').toUpperCase();
       document.getElementById('attendeeDisplayCollege').textContent = (passData.college || 'RAMAIAH INSTITUTE OF TECHNOLOGY').toUpperCase();
+      const usnEl = document.getElementById('attendeeDisplayUsn');
+      if (usnEl) usnEl.textContent = (passData.usn || 'N/A').toUpperCase();
       document.getElementById('attendeeDisplaySerial').textContent = passSerial;
 
       document.getElementById('passModal').classList.add('active');
@@ -1771,7 +1806,7 @@ body::before {
   if (btnDownloadPass) {
     btnDownloadPass.addEventListener('click', () => {
       playSound('fanfare');
-      downloadPixelPass(passData ? passData.name : 'PLAYER 1', passData ? passData.college : 'RAMAIAH INSTITUTE OF TECHNOLOGY', passSerial || '#EXP-2026-4820');
+      downloadPixelPass(passData ? passData.name : 'PLAYER 1', passData ? passData.college : 'RAMAIAH INSTITUTE OF TECHNOLOGY', passSerial || '#EXP-2026-4820', passData ? passData.usn : '');
     });
   }
 
@@ -1794,7 +1829,7 @@ body::before {
   }
 
   // Pixel Boarding Pass Canvas Generator
-  function downloadPixelPass(name, college, serial) {
+  function downloadPixelPass(name, college, serial, usn) {
     const canvas = document.createElement('canvas');
     canvas.width = 860;
     canvas.height = 480;
@@ -1829,27 +1864,37 @@ body::before {
     // Attendee Info
     ctx.fillStyle = '#3B5270';
     ctx.font = '12px "Press Start 2P", monospace';
-    ctx.fillText('PLAYER NAME', 54, 145);
+    ctx.fillText('PLAYER NAME', 54, 140);
 
     ctx.fillStyle = '#2563EB';
-    ctx.font = 'bold 24px "Pixelify Sans", sans-serif';
-    ctx.fillText((name || 'PLAYER 1').toUpperCase(), 54, 180);
+    ctx.font = 'bold 22px "Pixelify Sans", sans-serif';
+    ctx.fillText((name || 'PLAYER 1').toUpperCase(), 54, 170);
+
+    if (usn) {
+      ctx.fillStyle = '#3B5270';
+      ctx.font = '11px "Press Start 2P", monospace';
+      ctx.fillText('USN', 54, 205);
+
+      ctx.fillStyle = '#0F2744';
+      ctx.font = 'bold 16px "Pixelify Sans", sans-serif';
+      ctx.fillText(usn.toUpperCase(), 54, 230);
+    }
 
     ctx.fillStyle = '#3B5270';
-    ctx.font = '12px "Press Start 2P", monospace';
-    ctx.fillText('GUILD / INSTITUTION', 54, 230);
+    ctx.font = '11px "Press Start 2P", monospace';
+    ctx.fillText('GUILD / INSTITUTION', 54, usn ? 265 : 230);
 
     ctx.fillStyle = '#0F2744';
-    ctx.font = 'bold 18px "Pixelify Sans", sans-serif';
-    ctx.fillText((college || 'RAMAIAH INSTITUTE OF TECHNOLOGY').toUpperCase(), 54, 260);
+    ctx.font = 'bold 16px "Pixelify Sans", sans-serif';
+    ctx.fillText((college || 'RAMAIAH INSTITUTE OF TECHNOLOGY').toUpperCase(), 54, usn ? 290 : 260);
 
     ctx.fillStyle = '#3B5270';
-    ctx.font = '12px "Press Start 2P", monospace';
-    ctx.fillText('GATEWAY VENUE', 54, 310);
+    ctx.font = '11px "Press Start 2P", monospace';
+    ctx.fillText('GATEWAY VENUE', 54, usn ? 325 : 310);
 
     ctx.fillStyle = '#0F2744';
-    ctx.font = 'bold 18px "Pixelify Sans", sans-serif';
-    ctx.fillText('MAIN APEX AUDITORIUM • RIT CAMPUS', 54, 340);
+    ctx.font = 'bold 16px "Pixelify Sans", sans-serif';
+    ctx.fillText('MAIN APEX AUDITORIUM • RIT CAMPUS', 54, usn ? 350 : 340);
 
     // Right Verification Card
     ctx.fillStyle = '#EFF6FF';

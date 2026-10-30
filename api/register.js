@@ -26,6 +26,7 @@ module.exports = async (req, res) => {
             name TEXT,
             email TEXT,
             phone TEXT,
+            usn TEXT,
             college TEXT,
             branch TEXT,
             year TEXT,
@@ -35,14 +36,20 @@ module.exports = async (req, res) => {
           );
         `;
 
+        // Add usn column if it doesn't exist yet on existing table
+        await sql`
+          ALTER TABLE registrations ADD COLUMN IF NOT EXISTS usn TEXT;
+        `;
+
         const interestsStr = Array.isArray(data.interests) ? data.interests.join(', ') : (data.interests || '');
         await sql`
-          INSERT INTO registrations (serial, name, email, phone, college, branch, year, interests, vision)
+          INSERT INTO registrations (serial, name, email, phone, usn, college, branch, year, interests, vision)
           VALUES (
             ${data.serial || ''},
             ${data.name || ''},
             ${data.email || ''},
             ${data.phone || ''},
+            ${data.usn || ''},
             ${data.college || ''},
             ${data.branch || ''},
             ${data.year || ''},
