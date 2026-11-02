@@ -7,6 +7,14 @@
     {
       "source": "/api/registrations.csv",
       "destination": "/api/registrations?format=csv"
+    },
+    {
+      "source": "/admin",
+      "destination": "/portal.html"
+    },
+    {
+      "source": "/portal",
+      "destination": "/portal.html"
     }
   ]
 }
