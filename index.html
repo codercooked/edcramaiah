@@ -1311,7 +1311,10 @@ body::before {
 <div class="pixel-modal-backdrop" id="passModal">
   <div class="pixel-modal-box">
     <button class="modal-close-btn" id="closePassBtn">X</button>
-    <div class="stage-tag">STAGE 1 CLEAR!</div>
+    <div class="stage-tag" id="passStageTag">STAGE 1 CLEAR!</div>
+    <div id="passDuplicateAlert" style="display:none; background:rgba(239, 68, 68, 0.15); border:2px solid #ef4444; color:#ef4444; font-family:var(--font-mono); font-size:0.82rem; font-weight:700; padding:10px 14px; margin:0.8rem 0; text-align:center; letter-spacing:0.5px;">
+      [DUPLICATE BLOCKED] THIS USN IS ALREADY REGISTERED. NO NEW ENTRY CREATED. YOUR ORIGINAL VERIFIED PASS IS RETRIEVED BELOW.
+    </div>
     <h2 class="stage-title">PASS CONFIRMED</h2>
     <div id="attendeeDisplayName" style="font-family:var(--font-pixel); font-size:0.95rem; color:var(--blue-primary); margin:0.4rem 0 0.8rem">PLAYER</div>
 
@@ -1775,10 +1778,18 @@ body::before {
       btnNext.disabled = false;
       btnNextLabel.textContent = 'SEAL PASS';
 
+      const dupAlert = document.getElementById('passDuplicateAlert');
+      const stageTag = document.getElementById('passStageTag');
+
       if (result && result.alreadyRegistered) {
         if (result.serial) passSerial = result.serial;
         if (result.name) passData.name = result.name;
         if (result.usn) passData.usn = result.usn;
+        if (dupAlert) dupAlert.style.display = 'block';
+        if (stageTag) stageTag.textContent = '[DUPLICATE DETECTED]';
+      } else {
+        if (dupAlert) dupAlert.style.display = 'none';
+        if (stageTag) stageTag.textContent = 'STAGE 1 CLEAR!';
       }
 
       document.getElementById('attendeeDisplayName').textContent = (passData.name || 'PLAYER 1').toUpperCase();
