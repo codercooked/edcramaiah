@@ -13,6 +13,17 @@ module.exports = async (req, res) => {
 
   try {
     const sql = neon(dbUrl);
+
+    // Clean up any historical duplicates (keeps earliest submission)
+    await sql`
+      DELETE FROM registrations a USING registrations b
+      WHERE a.id > b.id
+        AND (
+          (LENGTH(COALESCE(a.usn, '')) > 0 AND UPPER(TRIM(a.usn)) = UPPER(TRIM(b.usn)))
+          OR (LENGTH(COALESCE(a.email, '')) > 0 AND LOWER(TRIM(a.email)) = LOWER(TRIM(b.email)))
+        );
+    `;
+
     const rows = await sql`SELECT * FROM registrations ORDER BY id DESC;`;
 
     // Download as CSV if requested

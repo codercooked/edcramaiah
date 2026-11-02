@@ -1761,7 +1761,10 @@ body::before {
       console.warn('Local storage save failed:', e);
     }
 
-    // 2. Transmit to server to save in registrations.json & registrations.csv
+    // 2. Transmit to server to save in Neon Postgres with duplicate check
+    btnNext.disabled = true;
+    btnNextLabel.textContent = 'SEALING...';
+
     fetch('/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1769,13 +1772,33 @@ body::before {
     })
     .then(res => res.json())
     .then(result => {
-      console.log('Registration successfully logged to server:', result);
+      btnNext.disabled = false;
+      btnNextLabel.textContent = 'SEAL PASS';
+
+      if (result && result.alreadyRegistered) {
+        if (result.serial) passSerial = result.serial;
+        if (result.name) passData.name = result.name;
+        if (result.usn) passData.usn = result.usn;
+      }
+
+      document.getElementById('attendeeDisplayName').textContent = (passData.name || 'PLAYER 1').toUpperCase();
+      document.getElementById('attendeeDisplayCollege').textContent = (passData.college || 'RAMAIAH INSTITUTE OF TECHNOLOGY').toUpperCase();
+      const usnEl = document.getElementById('attendeeDisplayUsn');
+      if (usnEl) usnEl.textContent = (passData.usn || 'N/A').toUpperCase();
+      document.getElementById('attendeeDisplaySerial').textContent = passSerial;
+
+      const titleEl = document.querySelector('#passModal .stage-title');
+      if (titleEl) {
+        titleEl.textContent = (result && result.alreadyRegistered) ? 'PASS RETRIEVED (ALREADY REGISTERED)' : 'PASS CONFIRMED';
+      }
+
+      document.getElementById('passModal').classList.add('active');
+      playSound('fanfare');
+      fireConfetti(window.innerWidth / 2, window.innerHeight * 0.45);
+      completeQuest('manifest', window.innerWidth / 2, window.innerHeight * 0.4);
     })
     .catch(err => {
       console.warn('Server offline or network error; entry cached locally in browser.', err);
-    });
-
-    setTimeout(() => {
       btnNext.disabled = false;
       btnNextLabel.textContent = 'SEAL PASS';
 
@@ -1788,9 +1811,8 @@ body::before {
       document.getElementById('passModal').classList.add('active');
       playSound('fanfare');
       fireConfetti(window.innerWidth / 2, window.innerHeight * 0.45);
-
       completeQuest('manifest', window.innerWidth / 2, window.innerHeight * 0.4);
-    }, 1000);
+    });
   }
 
   // Pass Modal actions

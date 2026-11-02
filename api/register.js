@@ -11,7 +11,10 @@ module.exports = async (req, res) => {
 
   if (req.method === 'POST') {
     const data = req.body || {};
-    console.log(`[VERCEL REGISTRATION] Logged #${data.serial}: ${data.name} (${data.email}) - ${data.college}`);
+    const cleanUsn = (data.usn || '').trim().toUpperCase().replace(/\s*-\s*/g, '-');
+    const cleanEmail = (data.email || '').trim().toLowerCase();
+
+    console.log(`[VERCEL REGISTRATION] Logged #${data.serial}: ${data.name} (${cleanEmail}) - USN: ${cleanUsn}`);
 
     // If Vercel Postgres / Neon database is connected
     const dbUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_PRISMA_URL;
@@ -41,15 +44,50 @@ module.exports = async (req, res) => {
           ALTER TABLE registrations ADD COLUMN IF NOT EXISTS usn TEXT;
         `;
 
+        // Deduplicate any historical duplicate rows first (keeps earliest submission)
+        await sql`
+          DELETE FROM registrations a USING registrations b
+          WHERE a.id > b.id
+            AND (
+              (LENGTH(COALESCE(a.usn, '')) > 0 AND UPPER(TRIM(a.usn)) = UPPER(TRIM(b.usn)))
+              OR (LENGTH(COALESCE(a.email, '')) > 0 AND LOWER(TRIM(a.email)) = LOWER(TRIM(b.email)))
+            );
+        `;
+
+        // Check for existing registration with matching USN or Email
+        if (cleanUsn || cleanEmail) {
+          const existing = await sql`
+            SELECT id, serial, name, email, usn, college
+            FROM registrations
+            WHERE (${cleanUsn.length > 0} AND UPPER(TRIM(COALESCE(usn, ''))) = ${cleanUsn})
+               OR (${cleanEmail.length > 0} AND LOWER(TRIM(COALESCE(email, ''))) = ${cleanEmail})
+            ORDER BY id ASC
+            LIMIT 1;
+          `;
+
+          if (existing.length > 0) {
+            console.log(`[DATABASE] Duplicate detected: ${cleanUsn || cleanEmail}. Returning existing pass #${existing[0].serial}`);
+            return res.status(200).json({
+              success: true,
+              alreadyRegistered: true,
+              serial: existing[0].serial,
+              name: existing[0].name,
+              usn: existing[0].usn,
+              college: existing[0].college,
+              message: 'Already registered for DISCOVER 2026. Existing pass retrieved.'
+            });
+          }
+        }
+
         const interestsStr = Array.isArray(data.interests) ? data.interests.join(', ') : (data.interests || '');
         await sql`
           INSERT INTO registrations (serial, name, email, phone, usn, college, branch, year, interests, vision)
           VALUES (
             ${data.serial || ''},
             ${data.name || ''},
-            ${data.email || ''},
+            ${cleanEmail || data.email || ''},
             ${data.phone || ''},
-            ${data.usn || ''},
+            ${cleanUsn || data.usn || ''},
             ${data.college || ''},
             ${data.branch || ''},
             ${data.year || ''},
@@ -57,7 +95,7 @@ module.exports = async (req, res) => {
             ${data.vision || ''}
           );
         `;
-        console.log('[DATABASE] Saved registration to Vercel Postgres table!');
+        console.log('[DATABASE] Saved new unique registration to Neon Postgres table!');
       } catch (dbErr) {
         console.error('[DATABASE ERROR]', dbErr);
       }
