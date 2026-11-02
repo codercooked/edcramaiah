@@ -1674,8 +1674,8 @@ body::before {
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('errEmail').classList.add('visible'); valid = false; }
       const digits = phone.replace(/\D/g, '');
       if (digits.length < 10) { document.getElementById('errPhone').classList.add('visible'); valid = false; }
-      // USN validation (format e.g. 1MS25IM058: 10 chars, starts with 1MS or general VTU format: \d[A-Z]{2}\d{2}[A-Z]{2}\d{3})
-      const usnPattern = /^[0-9][A-Z]{2}[0-9]{2}[A-Z]{2,3}[0-9]{3}$/;
+      // USN validation (format e.g. 1MS25IM058 or with section/temporary suffix like 1MS25IM058-T)
+      const usnPattern = /^[0-9][A-Z]{2}[0-9]{2}[A-Z]{2,4}[0-9]{3}(\s*-\s*[A-Z0-9]+)?$/;
       if (!usn || !usnPattern.test(usn)) { document.getElementById('errUsn').classList.add('visible'); valid = false; }
     } else if (stage === 1) {
       const checked = document.querySelectorAll('input[name="interests"]:checked');
@@ -1740,7 +1740,7 @@ body::before {
       name: document.getElementById('inpName').value.trim(),
       email: document.getElementById('inpEmail').value.trim(),
       phone: document.getElementById('inpPhone').value.trim(),
-      usn: document.getElementById('inpUsn').value.trim().toUpperCase(),
+      usn: document.getElementById('inpUsn').value.trim().toUpperCase().replace(/\s*-\s*/g, '-'),
       college: 'RAMAIAH INSTITUTE OF TECHNOLOGY',
       branch: '',
       year: '',
